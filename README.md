@@ -115,3 +115,6 @@ Contributions are very welcome and wanted.
 
 1.  make sure to write tests for your code, run  `npm test`  and  `npm build`  before submitting your merge request.
 2.  make sure you've added the documentation.
+
+## Keywords
+web-speech-api, react-speakup, speech-recognition, speech-synthesis, voice-to-text, text-to-voice, speak
