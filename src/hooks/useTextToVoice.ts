@@ -11,8 +11,8 @@ enum NODE_TYPE {
   TEXT = 3,
 }
 
-const useTextToVoice = ({ pitch, rate, volume }: Options = {}) => {
-  const textContainerRef = useRef<Element>()
+const useTextToVoice = <T extends HTMLElement>({ pitch, rate, volume }: Options = {}) => {
+  const textContainerRef = useRef<T>(null)
   const voiceTranscript = useRef<string>('')
   const firstRenderRef = useRef<boolean>(true)
   const [textContent, setTextContent] = useState<string>('')
@@ -20,7 +20,7 @@ const useTextToVoice = ({ pitch, rate, volume }: Options = {}) => {
 
   const utterThis = useMemo(() => new SpeechSynthesisUtterance(textContent), [textContent])
 
-  const extractText = useCallback((element: Element | ChildNode | undefined) => {
+  const extractText = useCallback((element: Element | ChildNode | null) => {
     if (!element) return
     // Check if the element has child nodes
     if (element.childNodes.length > 0) {
