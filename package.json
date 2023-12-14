@@ -17,7 +17,7 @@
     "prettier": "prettier --write \"{src,tests,example/src}/**/*.{js,ts,jsx,tsx}\"",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run prettier && npm run lint",
-    "test": "jest"
+    "test": "jest --config jestconfig.json"
   },
   "keywords": [
     "react",
@@ -44,9 +44,12 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "jest": "^29.7.0",
+    "jest-canvas-mock": "^2.5.2",
+    "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.1.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
+    "ts-jest": "^29.1.1",
     "typescript": "^4.7.3"
   },
   "peerDependencies": {
