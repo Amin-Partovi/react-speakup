@@ -45,13 +45,13 @@ import React from "react";
 import { useVoiceToText } from "react-speakup";
 
 const VoiceToTextComponent = () => {
-  const { start, stop, text } = useVoiceToText();
+  const { startListening, stopListening, transcript } = useVoiceToText();
 
   return (
     <div>
-      <button onClick={start}>Start Listening</button>
-      <button onClick={stop}>Stop Listening</button>
-      <span>{text}</span>
+      <button onClick={startListening}>Start Listening</button>
+      <button onClick={stopListening}>Stop Listening</button>
+      <span>{transcript}</span>
     </div>
   );
 };

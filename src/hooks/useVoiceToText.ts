@@ -6,7 +6,7 @@ interface Options {
 }
 
 const useVoiceToText = ({ lang, continuous }: Options = { lang: 'en-US', continuous: true }) => {
-  const [text, setText] = useState<string>('')
+  const [transcript, setTranscript] = useState<string>('')
   const isContinuous = useRef<boolean>(continuous ?? true)
 
   const SpeechRecognition = useMemo(() => window.SpeechRecognition || window.webkitSpeechRecognition, [])
@@ -19,14 +19,14 @@ const useVoiceToText = ({ lang, continuous }: Options = { lang: 'en-US', continu
     }
   }, [lang, recognition])
 
-  function start() {
+  function startListening() {
     recognition.start()
     if (continuous) {
       isContinuous.current = true
     }
   }
 
-  function stop() {
+  function stopListening() {
     recognition.stop()
     isContinuous.current = false
   }
@@ -34,7 +34,7 @@ const useVoiceToText = ({ lang, continuous }: Options = { lang: 'en-US', continu
   recognition.onend = () => {
     if (isContinuous.current) {
       // if the listening is continuous, it starts listening even the speaker is quiet till it will stop manually
-      start()
+      startListening()
     }
   }
 
@@ -43,10 +43,10 @@ const useVoiceToText = ({ lang, continuous }: Options = { lang: 'en-US', continu
   }
 
   recognition.onresult = (event: SpeechRecognitionEvent) => {
-    setText((text) => text + ' ' + event.results[0][0].transcript)
+    setTranscript((prevTranscript) => prevTranscript + ' ' + event.results[0][0].transcript)
   }
 
-  return { start, stop, text }
+  return { startListening, stopListening, transcript }
 }
 
 export default useVoiceToText
