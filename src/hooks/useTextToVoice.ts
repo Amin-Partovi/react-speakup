@@ -16,6 +16,7 @@ const useTextToVoice = <T extends HTMLElement>({ pitch, rate, volume }: Options 
   const voiceTranscript = useRef<string>('')
   const firstRenderRef = useRef<boolean>(true)
   const [textContent, setTextContent] = useState<string>('')
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false)
   const synth = typeof window === 'undefined' ? null : window.speechSynthesis
 
   const utterThis = useMemo(() => {
@@ -46,10 +47,14 @@ const useTextToVoice = <T extends HTMLElement>({ pitch, rate, volume }: Options 
     utterThis.onerror = (event) => {
       console.log(`An error has occurred with the speech synthesis: ${event.error}`)
     }
+
+    utterThis.onend = () => {
+      setIsSpeaking(false)
+    }
   }
 
   // get voices Web Speech API provided
-  const voices = useMemo(() => (synth ? synth.getVoices() : []), [synth])
+  const voices = synth?.getVoices() || []
   const voiceNames = useMemo(() => voices.map((voice) => voice.name), [voices])
 
   useEffect(() => {
@@ -74,15 +79,24 @@ const useTextToVoice = <T extends HTMLElement>({ pitch, rate, volume }: Options 
   }, [utterThis, pitch, volume, rate])
 
   function speak() {
-    if (synth && utterThis) synth.speak(utterThis)
+    if (synth && utterThis) {
+      synth.speak(utterThis)
+      setIsSpeaking(true)
+    }
   }
 
   function pause() {
-    if (synth) synth.pause()
+    if (synth) {
+      synth.pause()
+      setIsSpeaking(false)
+    }
   }
 
   function resume() {
-    if (synth) synth.resume()
+    if (synth) {
+      synth.resume()
+      setIsSpeaking(true)
+    }
   }
 
   function setVoice(voiceName: string) {
@@ -97,6 +111,8 @@ const useTextToVoice = <T extends HTMLElement>({ pitch, rate, volume }: Options 
     voices: voiceNames,
     setVoice,
     ref: textContainerRef,
+    utterance: utterThis,
+    isSpeaking,
   }
 }
 
