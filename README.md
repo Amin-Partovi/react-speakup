@@ -111,10 +111,6 @@ export default TextToVoiceComponent;
 
 # Contributing
 Contributions are very welcome and wanted.
-**Prior to submitting your pull request**: please take note of the following
-
-1.  make sure to write tests for your code, run  `npm test`  and  `npm build`  before submitting your merge request.
-2.  make sure you've added the documentation.
 
 ## Keywords
 web-speech-api, react-speakup, speech-recognition, speech-synthesis, voice-to-text, text-to-voice, speak

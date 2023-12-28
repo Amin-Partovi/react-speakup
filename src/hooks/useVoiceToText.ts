@@ -9,17 +9,26 @@ const useVoiceToText = ({ lang, continuous }: Options = { lang: 'en-US', continu
   const [transcript, setTranscript] = useState<string>('')
   const isContinuous = useRef<boolean>(continuous ?? true)
 
-  const SpeechRecognition = useMemo(() => window.SpeechRecognition || window.webkitSpeechRecognition, [])
+  const SpeechRecognition = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return null
+    }
+    return window.SpeechRecognition || window.webkitSpeechRecognition
+  }, [])
 
-  const recognition = useMemo(() => new SpeechRecognition(), [SpeechRecognition])
+  const recognition = useMemo(() => {
+    if (SpeechRecognition) return new SpeechRecognition()
+    else return null
+  }, [SpeechRecognition])
 
   useEffect(() => {
-    if (lang) {
+    if (lang && recognition) {
       recognition.lang = lang
     }
   }, [lang, recognition])
 
   function startListening() {
+    if (!recognition) return
     recognition.start()
     if (continuous) {
       isContinuous.current = true
@@ -27,23 +36,25 @@ const useVoiceToText = ({ lang, continuous }: Options = { lang: 'en-US', continu
   }
 
   function stopListening() {
+    if (!recognition) return
     recognition.stop()
     isContinuous.current = false
   }
 
-  recognition.onend = () => {
-    if (isContinuous.current) {
-      // if the listening is continuous, it starts listening even the speaker is quiet till it will stop manually
-      startListening()
+  if (recognition) {
+    recognition.onend = () => {
+      if (isContinuous.current) {
+        // if the listening is continuous, it starts listening even the speaker is quiet till it will be stopped manually
+        startListening()
+      }
     }
-  }
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      console.error(`Speech recognition error detected: ${event.error}`)
+    }
 
-  recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-    console.error(`Speech recognition error detected: ${event.error}`)
-  }
-
-  recognition.onresult = (event: SpeechRecognitionEvent) => {
-    setTranscript((prevTranscript) => prevTranscript + ' ' + event.results[0][0].transcript)
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      setTranscript((prevTranscript) => prevTranscript + ' ' + event.results[0][0].transcript)
+    }
   }
 
   return { startListening, stopListening, transcript }

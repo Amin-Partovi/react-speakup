@@ -16,9 +16,15 @@ const useTextToVoice = <T extends HTMLElement>({ pitch, rate, volume }: Options 
   const voiceTranscript = useRef<string>('')
   const firstRenderRef = useRef<boolean>(true)
   const [textContent, setTextContent] = useState<string>('')
-  const synth = window.speechSynthesis
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false)
+  const synth = typeof window === 'undefined' ? null : window.speechSynthesis
 
-  const utterThis = useMemo(() => new SpeechSynthesisUtterance(textContent), [textContent])
+  const utterThis = useMemo(() => {
+    if (typeof SpeechSynthesisUtterance === 'undefined') {
+      return null
+    }
+    return new SpeechSynthesisUtterance(textContent)
+  }, [textContent])
 
   const extractText = useCallback((element: Element | ChildNode | null) => {
     if (!element) return
@@ -37,12 +43,18 @@ const useTextToVoice = <T extends HTMLElement>({ pitch, rate, volume }: Options 
     }
   }, [])
 
-  utterThis.onerror = (event) => {
-    console.log(`An error has occurred with the speech synthesis: ${event.error}`)
+  if (utterThis) {
+    utterThis.onerror = (event) => {
+      console.log(`An error has occurred with the speech synthesis: ${event.error}`)
+    }
+
+    utterThis.onend = () => {
+      setIsSpeaking(false)
+    }
   }
 
   // get voices Web Speech API provided
-  const voices = synth.getVoices()
+  const voices = synth?.getVoices() || []
   const voiceNames = useMemo(() => voices.map((voice) => voice.name), [voices])
 
   useEffect(() => {
@@ -55,32 +67,41 @@ const useTextToVoice = <T extends HTMLElement>({ pitch, rate, volume }: Options 
   }, [extractText, textContainerRef])
 
   useEffect(() => {
-    if (pitch) {
+    if (pitch && utterThis) {
       utterThis.pitch = pitch
     }
-    if (volume) {
+    if (volume && utterThis) {
       utterThis.volume = volume
     }
-    if (rate) {
+    if (rate && utterThis) {
       utterThis.rate = rate
     }
   }, [utterThis, pitch, volume, rate])
 
   function speak() {
-    synth.speak(utterThis)
+    if (synth && utterThis) {
+      synth.speak(utterThis)
+      setIsSpeaking(true)
+    }
   }
 
   function pause() {
-    synth.pause()
+    if (synth) {
+      synth.pause()
+      setIsSpeaking(false)
+    }
   }
 
   function resume() {
-    synth.resume()
+    if (synth) {
+      synth.resume()
+      setIsSpeaking(true)
+    }
   }
 
   function setVoice(voiceName: string) {
     // find selected voice by its name
-    utterThis.voice = voices.find((item) => item.name === voiceName) as SpeechSynthesisVoice
+    if (utterThis) utterThis.voice = voices.find((item) => item.name === voiceName) as SpeechSynthesisVoice
   }
 
   return {
@@ -90,6 +111,8 @@ const useTextToVoice = <T extends HTMLElement>({ pitch, rate, volume }: Options 
     voices: voiceNames,
     setVoice,
     ref: textContainerRef,
+    utterance: utterThis,
+    isSpeaking,
   }
 }
 
