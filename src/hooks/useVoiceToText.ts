@@ -29,6 +29,7 @@ const useVoiceToText = ({ lang, continuous }: Options = { lang: 'en-US', continu
 
   function startListening() {
     if (!recognition) return
+    setTranscript('') //Reset transcrip's value, so that new voice to text value will not be appended.
     recognition.start()
     if (continuous) {
       isContinuous.current = true
