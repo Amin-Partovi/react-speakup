@@ -60,8 +60,6 @@ const useVoiceToText = ({ lang, continuous }: Options = { lang: 'en-US', continu
       setTranscript((prevTranscript) => prevTranscript + ' ' + event.results[0][0].transcript)
     }
   }
-
   return { startListening, stopListening, transcript, reset }
 }
-
 export default useVoiceToText
