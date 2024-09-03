@@ -54,7 +54,7 @@ const useTextToVoice = <T extends HTMLElement>({ pitch, rate, volume }: Options 
   }
 
   // get voices Web Speech API provided
-  const voices = synth?.getVoices() || []
+  const voices = useMemo(() => synth?.getVoices() ?? [], [synth])
   const voiceNames = useMemo(() => voices.map((voice) => voice.name), [voices])
 
   useEffect(() => {
