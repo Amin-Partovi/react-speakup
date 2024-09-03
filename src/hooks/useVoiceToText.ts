@@ -41,6 +41,10 @@ const useVoiceToText = ({ lang, continuous }: Options = { lang: 'en-US', continu
     isContinuous.current = false
   }
 
+  function reset() {
+    setTranscript('')
+  }
+
   if (recognition) {
     recognition.onend = () => {
       if (isContinuous.current) {
@@ -57,7 +61,7 @@ const useVoiceToText = ({ lang, continuous }: Options = { lang: 'en-US', continu
     }
   }
 
-  return { startListening, stopListening, transcript }
+  return { startListening, stopListening, transcript, reset }
 }
 
 export default useVoiceToText
