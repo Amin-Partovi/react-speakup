@@ -1,6 +1,6 @@
 {
   "name": "react-speakup",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "a lightweight and easy-to-use React package that enables your application to convert text to speech and speech to text effortlessly.",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
